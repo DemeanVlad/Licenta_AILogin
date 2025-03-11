@@ -20,6 +20,8 @@ def index():
 @app.route("/register", methods=["POST"])
 def register():
     name = request.form.get("name")
+    email = request.form.get("email")
+    password = request.form.get("password")
     #and get you photo uloads
     photo = request.files['photo']
 
@@ -34,7 +36,11 @@ def register():
     #and save you phoyo image with file name date now
     photo.save(os.path.join(uploads_folder, f'{datetime.date.today()}_{name}.jpg'))
 
-    registered_data[name] = f"{datetime.date.today()}_{name}.jpg"
+    registered_data[name] = {
+        "email": email,
+        "password": password,
+        "photo": f"{datetime.date.today()}_{name}.jpg"
+    }
     #and send success response then page will refresh and login
     response = {"success": True, 'name': name}
     return jsonify(response)
@@ -42,6 +48,8 @@ def register():
 #create login route post
 @app.route("/login", methods=["POST"])
 def login():  
+    email = request.form.get("email")
+    password = request.form.get("password")
     photo = request.files['photo']
 
     #and save you photo login to folder uploads
@@ -75,20 +83,21 @@ def login():
     #you imafes tehn login succes
     login_face_encodings = face_recognition.face_encodings(login_image)
 
-    for name, filename in registered_data.items():
-        registered_photo = os.path.join(uploads_folder, filename)
-        registered_image = face_recognition.load_image_file(registered_photo)
+    for name, data in registered_data.items():
+        if data["email"] == email and data["password"] == password:
+            registered_photo = os.path.join(uploads_folder, data["photo"])
+            registered_image = face_recognition.load_image_file(registered_photo)
 
-        register_face_encodings = face_recognition.face_encodings(registered_image)
-        #and compare your image from loin and reister photo
+            register_face_encodings = face_recognition.face_encodings(registered_image)
+            #and compare your image from loin and reister photo
 
-        if len(register_face_encodings) > 0 and len(login_face_encodings) > 0:
-            matches = face_recognition.compare_faces(register_face_encodings, login_face_encodings[0])
-            #and see amtch
-            print("matches", matches)
-            if any(matches):
-                response = {"success": True, "name": name}
-                return jsonify(response)
+            if len(register_face_encodings) > 0 and len(login_face_encodings) > 0:
+                matches = face_recognition.compare_faces(register_face_encodings, login_face_encodings[0])
+                #and see amtch
+                print("matches", matches)
+                if any(matches):
+                    response = {"success": True, "name": name}
+                    return jsonify(response)
         
         #and if no match found
     response = {"success": False}

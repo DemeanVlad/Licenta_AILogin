@@ -1,13 +1,42 @@
 <!DOCTYPE html>
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Recognition</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Success - Buy Tickets</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles_success.css') }}">
 </head>
 <body>
-    <h1>ok</h1>
+    <div class="container">
+        <h1>Welcome, {{ user_name }}!</h1>
+        <p>Congratulations on your successful login. You can now buy tickets to upcoming events.</p>
+        
+        <div class="store">
+            <h2>Upcoming Events</h2>
+            <div class="event">
+                <h3>Concert A</h3>
+                <p>Date: 2025-04-01</p>
+                <p>Location: Venue A</p>
+                <button onclick="buyTicket('Concert A')">Buy Ticket</button>
+            </div>
+            <div class="event">
+                <h3>Concert B</h3>
+                <p>Date: 2025-05-15</p>
+                <p>Location: Venue B</p>
+                <button onclick="buyTicket('Concert B')">Buy Ticket</button>
+            </div>
+            <div class="event">
+                <h3>Festival C</h3>
+                <p>Date: 2025-06-20</p>
+                <p>Location: Venue C</p>
+                <button onclick="buyTicket('Festival C')">Buy Ticket</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function buyTicket(eventName) {
+            alert('Ticket for ' + eventName + ' purchased successfully!');
+        }
+    </script>
 </body>
 </html>
