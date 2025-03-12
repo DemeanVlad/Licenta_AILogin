@@ -1,16 +1,12 @@
 let video;
 let canvas;
 let nameInput;
-let emailInput;
-let passwordInput;
 
 function init(){
     //and now if you run it will open instant camera
     video = document.getElementById("video");
     canvas = document.getElementById("canvas");
     nameInput = document.getElementById("nameInput");
-    emailInput = document.getElementById("emailInput");
-    passwordInput = document.getElementById("passwordInput");
 
     //open webcam access
     navigator.mediaDevices.getUserMedia({video:true})
@@ -33,18 +29,14 @@ function capture(){
 //and create register function
 function register(){
     const name = nameInput.value;
-    const email = emailInput.value;
-    const password = passwordInput.value;
     const photo = dataURItoBlob(canvas.toDataURL());
 
-    if(!name || !email || !password || !photo){
-        alert("All fields are required");
+    if(!name || !photo){
+        alert("name and photo required please");
         return;
     }
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("email", email);
-    formData.append("password", password);
     formData.append("photo", photo, `${name}.jpg`);
 
     fetch("/register", {
@@ -54,10 +46,10 @@ function register(){
     .then(response => response.json())
     .then(data =>{
         if(data.success){
-            alert("Registration successful");
+            alert("data success register");
             window.location.href = "/";
         }else{
-            alert("Registration failed");
+            alert("sorry failed register");
         }
     })
     .catch(error => {
@@ -66,19 +58,15 @@ function register(){
 }
 
 function login(){
-    const email = emailInput.value;
-    const password = passwordInput.value;
     const context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const photo = dataURItoBlob(canvas.toDataURL());
 
-    if(!email || !password || !photo){
-        alert("All fields are required");
+    if(!photo){
+        alert("photo required please");
         return;
     }
     const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
     formData.append("photo", photo, "login.jpg");
 
     fetch("/login", {
@@ -89,10 +77,10 @@ function login(){
     .then(data =>{
         console.log(data);
         if(data.success){
-            alert("Login successful");
+            alert("login ok");
             window.location.href = "/success?user_name=" + nameInput.value;
         }else{
-            alert("Login failed");
+            alert("login failed");
         }
     }).catch(error =>{
         console.log("error", error);
