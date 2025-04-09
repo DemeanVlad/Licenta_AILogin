@@ -1,101 +1,133 @@
 import os
-import datetime
 import cv2
 from flask import Flask, jsonify, request, render_template
-
+import sqlite3
+from werkzeug.security import generate_password_hash, check_password_hash
+import json
 import face_recognition
 
 app = Flask(__name__)
-#create var for register
 
-registered_data = {}
+# Funcție pentru inițializarea bazei de date
+def init_db():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            face_encoding TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
+# Inițializăm baza de date la pornirea aplicației
+init_db()
 
 @app.route("/")
 def index():
-    #now render you html file
+    # Renderizăm pagina principală
     return render_template("index.html")
 
-#post method
+# Ruta pentru înregistrare
 @app.route("/register", methods=["POST"])
 def register():
     name = request.form.get("name")
-    #and get you photo uloads
+    password = request.form.get("password")
     photo = request.files['photo']
 
-    #and now save you phoyo to uploads folder
-    #when you register process
+    # Salvăm imaginea în folderul uploads
     uploads_folder = os.path.join(os.getcwd(), "static", "uploads")
-    #and if folder uploads not found this system will
-    #auto create folder uploads
     if not os.path.exists(uploads_folder):
         os.makedirs(uploads_folder)
+    photo_path = os.path.join(uploads_folder, f'{name}.jpg')
+    photo.save(photo_path)
 
-    #and save you phoyo image with file name date now
-    photo.save(os.path.join(uploads_folder, f'{datetime.date.today()}_{name}.jpg'))
+    # Extragere vector facial
+    image = face_recognition.load_image_file(photo_path)
+    face_encodings = face_recognition.face_encodings(image)
 
-    registered_data[name] = f"{datetime.date.today()}_{name}.jpg"
-    #and send success response then page will refresh and login
-    response = {"success": True, 'name': name}
-    return jsonify(response)
+    if len(face_encodings) == 0:
+        return jsonify({"success": False, "message": "No face detected in the image."})
 
-#create login route post
+    face_encoding = face_encodings[0]
+    face_encoding_json = json.dumps(face_encoding.tolist())
+
+    # Hash parola
+    hashed_password = generate_password_hash(password)
+
+    # Salvăm utilizatorul în baza de date
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO users (username, password, face_encoding)
+            VALUES (?, ?, ?)
+        ''', (name, hashed_password, face_encoding_json))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": "User registered successfully."})
+    except sqlite3.IntegrityError:
+        return jsonify({"success": False, "message": "Username already exists."})
+
+# Ruta pentru autentificare cu recunoaștere facială
 @app.route("/login", methods=["POST"])
-def login():  
+def login():
     photo = request.files['photo']
 
-    #and save you photo login to folder uploads
+    # Salvăm imaginea de login
     uploads_folder = os.path.join(os.getcwd(), "static", "uploads")
-    #and create folder if it s not found
     if not os.path.exists(uploads_folder):
         os.makedirs(uploads_folder)
+    login_path = os.path.join(uploads_folder, "login_face.jpg")
+    photo.save(login_path)
 
-    #and sace file photo login /w ur name
-    login_filename = os.path.join(uploads_folder, "login_face.jpg")
-
-    photo.save(login_filename)
-
-    #and thiss process will detect you camrea is there face or not
-
-    login_image = cv2.imread(login_filename)
-    gray_image = cv2.cvtColor(login_image, cv2.COLOR_BGR2GRAY)
-
-    #and load you haar cascde file here
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
-
-    #and detect if no face in camera
-    if len(faces) == 0:
-        response = {"success": False}
-        return jsonify(response)
-
-    login_image = face_recognition.load_image_file(login_filename)
-    #and process andrecognition you face
-    #and if photos in folder uploads find domain similarity
-    #you imafes tehn login succes
+    # Extragere vector facial din imaginea de login
+    login_image = face_recognition.load_image_file(login_path)
     login_face_encodings = face_recognition.face_encodings(login_image)
 
-    for name, filename in registered_data.items():
-        registered_photo = os.path.join(uploads_folder, filename)
-        registered_image = face_recognition.load_image_file(registered_photo)
+    if len(login_face_encodings) == 0:
+        return jsonify({"success": False, "message": "No face detected in the image."})
 
-        register_face_encodings = face_recognition.face_encodings(registered_image)
-        #and compare your image from loin and reister photo
+    login_face_encoding = login_face_encodings[0]
 
-        if len(register_face_encodings) > 0 and len(login_face_encodings) > 0:
-            matches = face_recognition.compare_faces(register_face_encodings, login_face_encodings[0])
-            #and see amtch
-            print("matches", matches)
-            if any(matches):
-                response = {"success": True, "name": name}
-                return jsonify(response)
+    # Comparăm vectorul facial cu utilizatorii din baza de date
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT username, face_encoding FROM users')
+    users = cursor.fetchall()
 
-        #and if no match found
-    response = {"success": False}
-    return jsonify(response)
+    for username, face_encoding_json in users:
+        stored_face_encoding = json.loads(face_encoding_json)
+        matches = face_recognition.compare_faces([stored_face_encoding], login_face_encoding)
+        if any(matches):
+            return jsonify({"success": True, "message": "Login successful.", "username": username})
 
-    #and this page will show success page if tou succes login
+    return jsonify({"success": False, "message": "No matching face found."})
 
+# Ruta pentru autentificare cu username și parolă
+@app.route("/login_with_credentials", methods=["POST"])
+def login_with_credentials():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT password FROM users WHERE username = ?', (username,))
+    result = cursor.fetchone()
+
+    if result is None:
+        return jsonify({"success": False, "message": "Invalid username or password."})
+
+    stored_password = result[0]
+    if check_password_hash(stored_password, password):
+        return jsonify({"success": True, "message": "Login successful.", "username": username})
+    else:
+        return jsonify({"success": False, "message": "Invalid username or password."})
+
+# Ruta pentru pagina de succes
 @app.route("/success")
 def success():
     user_name = request.args.get("user_name")

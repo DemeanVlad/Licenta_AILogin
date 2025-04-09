@@ -27,16 +27,19 @@ function capture(){
 }
 
 //and create register function
-function register(){
+function register() {
     const name = nameInput.value;
+    const password = prompt("Enter your password:");
     const photo = dataURItoBlob(canvas.toDataURL());
 
-    if(!name || !photo){
-        alert("name and photo required please");
+    if (!name || !password || !photo) {
+        alert("Name, password, and photo are required.");
         return;
     }
+
     const formData = new FormData();
     formData.append("name", name);
+    formData.append("password", password);
     formData.append("photo", photo, `${name}.jpg`);
 
     fetch("/register", {
@@ -44,28 +47,28 @@ function register(){
         body: formData
     })
     .then(response => response.json())
-    .then(data =>{
-        if(data.success){
-            alert("data success register");
-            window.location.href = "/";
-        }else{
-            alert("sorry failed register");
+    .then(data => {
+        if (data.success) {
+            alert("Registration successful!");
+        } else {
+            alert(data.message);
         }
     })
     .catch(error => {
-        console.log("error", error);
+        console.error("Error:", error);
     });
 }
 
-function login(){
+function login() {
     const context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     const photo = dataURItoBlob(canvas.toDataURL());
 
-    if(!photo){
-        alert("photo required please");
+    if (!photo) {
+        alert("Photo is required.");
         return;
     }
+
     const formData = new FormData();
     formData.append("photo", photo, "login.jpg");
 
@@ -74,16 +77,57 @@ function login(){
         body: formData
     })
     .then(response => response.json())
-    .then(data =>{
-        console.log(data);
-        if(data.success){
-            alert("login ok");
-            window.location.href = "/success?user_name=" + nameInput.value;
-        }else{
-            alert("login failed");
+    .then(data => {
+        if (data.success) {
+            alert(`Welcome, ${data.username}!`);
+            window.location.href = "/success?user_name=" + data.username;
+        } else {
+            alert(data.message);
         }
-    }).catch(error =>{
-        console.log("error", error);
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+// Afișează formularul de login cu username și parolă
+function showLoginForm() {
+    document.getElementById("loginForm").style.display = "block";
+}
+
+// Ascunde formularul de login
+function hideLoginForm() {
+    document.getElementById("loginForm").style.display = "none";
+}
+
+// Funcția pentru autentificare cu username și parolă
+function loginWithCredentials() {
+    const username = document.getElementById("usernameInput").value;
+    const password = document.getElementById("passwordInput").value;
+
+    if (!username || !password) {
+        alert("Please enter both username and password.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("username", username);
+    formData.append("password", password);
+
+    fetch("/login_with_credentials", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Welcome, ${data.username}!`);
+            window.location.href = "/success?user_name=" + data.username;
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
     });
 }
 

@@ -22,7 +22,22 @@
             <br>
             <button onclick="register()">REGISTER</button>
             <button onclick="login()">LOGIN</button>
+            <br><br>
+            <button onclick="showLoginForm()">LOGHEAZĂ-TE FĂRĂ FAȚĂ</button>
         </div>
+    </div>
+
+    <!-- Formular pentru autentificare cu username și parolă -->
+    <div id="loginForm" style="display: none;">
+        <h3>LOGIN WITH USERNAME AND PASSWORD</h3>
+        <label for="username">Username</label>
+        <input type="text" id="usernameInput" required>
+        <br>
+        <label for="password">Password</label>
+        <input type="password" id="passwordInput" required>
+        <br>
+        <button onclick="loginWithCredentials()">LOGIN</button>
+        <button onclick="hideLoginForm()">CANCEL</button>
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
