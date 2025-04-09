@@ -10,8 +10,11 @@ app = Flask(__name__)
 
 # Funcție pentru inițializarea bazei de date
 def init_db():
+    # Conectare la baza de date
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
+
+    # Crearea tabelei `users`
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,6 +23,18 @@ def init_db():
             face_encoding TEXT
         )
     ''')
+
+    # Crearea tabelei `user_events`
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS user_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            event_name TEXT NOT NULL,
+            FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
+        )
+    ''')
+
+    # Confirmăm modificările și închidem conexiunea
     conn.commit()
     conn.close()
 
@@ -132,6 +147,44 @@ def login_with_credentials():
 def success():
     user_name = request.args.get("user_name")
     return render_template("success.html", user_name=user_name)
+
+# Ruta pentru adăugarea unui eveniment
+@app.route("/add_event", methods=["POST"])
+def add_event():
+    username = request.form.get("username")
+    event_name = request.form.get("event_name")
+
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        # Inserăm evenimentul în tabelul `user_events`
+        cursor.execute('''
+            INSERT INTO user_events (username, event_name)
+            VALUES (?, ?)
+        ''', (username, event_name))
+        conn.commit()
+        conn.close()
+        return jsonify({"success": True, "message": f"Event '{event_name}' added to your profile."})
+    except sqlite3.IntegrityError:
+        return jsonify({"success": False, "message": "You have already added this event."})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+# Ruta pentru obținerea evenimentelor utilizatorului
+@app.route("/get_user_events", methods=["GET"])
+def get_user_events():
+    username = request.args.get("username")  # Obține username-ul din cerere
+
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        # Selectăm doar evenimentele asociate cu username-ul utilizatorului curent
+        cursor.execute('SELECT event_name FROM user_events WHERE username = ?', (username,))
+        events = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return jsonify({"success": True, "events": events})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
 
 if __name__ == "__main__":
     app.run(debug=True)

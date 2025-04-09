@@ -3,40 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Success - Buy Tickets</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles_success.css') }}">
+    <title>Success</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styles_success.css') }}">
 </head>
 <body>
     <div class="container">
         <h1>Welcome, {{ user_name }}!</h1>
-        <p>Congratulations on your successful login. You can now buy tickets to upcoming events.</p>
         
-        <div class="store">
-            <h2>Upcoming Events</h2>
+        <!-- Secțiunea pentru evenimente disponibile -->
+        <h2>Available Events</h2>
+        <div class="events">
             <div class="event">
-                <h3>Concert A</h3>
-                <p>Date: 2025-04-01</p>
-                <p>Location: Venue A</p>
-                <button onclick="buyTicket('Concert A')">Buy Ticket</button>
+                <h3>Concert Rock</h3>
+                <p>Date: 15 April 2025</p>
+                <button onclick="participateInEvent('Concert Rock')">Participă</button>
             </div>
             <div class="event">
-                <h3>Concert B</h3>
-                <p>Date: 2025-05-15</p>
-                <p>Location: Venue B</p>
-                <button onclick="buyTicket('Concert B')">Buy Ticket</button>
+                <h3>Festival de Film</h3>
+                <p>Date: 20 April 2025</p>
+                <button onclick="participateInEvent('Festival de Film')">Participă</button>
             </div>
             <div class="event">
-                <h3>Festival C</h3>
-                <p>Date: 2025-06-20</p>
-                <p>Location: Venue C</p>
-                <button onclick="buyTicket('Festival C')">Buy Ticket</button>
+                <h3>Maraton Caritabil</h3>
+                <p>Date: 25 April 2025</p>
+                <button onclick="participateInEvent('Maraton Caritabil')">Participă</button>
             </div>
         </div>
+
+        <!-- Secțiunea pentru evenimentele utilizatorului -->
+        <h2>Your Events</h2>
+        <div id="userEvents">
+            <!-- Evenimentele utilizatorului vor fi afișate aici -->
+        </div>
     </div>
+
+    <!-- Transmiterea variabilei user_name către JavaScript -->
     <script>
-        function buyTicket(eventName) {
-            alert('Ticket for ' + eventName + ' purchased successfully!');
-        }
+        const userName = "{{ user_name }}"; // Obține username-ul utilizatorului conectat din Flask
     </script>
+
+    <!-- Script pentru funcționalitate -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>

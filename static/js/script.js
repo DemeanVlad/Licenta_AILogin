@@ -131,6 +131,57 @@ function loginWithCredentials() {
     });
 }
 
+// Funcția pentru a participa la un eveniment
+function participateInEvent(eventName) {
+    const formData = new FormData();
+    formData.append("username", userName); // Folosește variabila `userName` definită în JavaScript
+    formData.append("event_name", eventName);
+
+    fetch("/add_event", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+            loadUserEvents(); // Reîncarcă evenimentele utilizatorului
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => console.error("Error:", error));
+}
+
+// Funcția pentru a încărca evenimentele utilizatorului
+function loadUserEvents() {
+    fetch(`/get_user_events?username=${userName}`)
+        .then(response => response.json())
+        .then(data => {
+            const userEventsDiv = document.getElementById("userEvents");
+            userEventsDiv.innerHTML = ""; // Golește lista curentă
+
+            if (data.success) {
+                if (data.events.length === 0) {
+                    userEventsDiv.innerHTML = "<p>You haven't participated in any events yet.</p>";
+                } else {
+                    data.events.forEach(event => {
+                        const eventElement = document.createElement("div");
+                        eventElement.className = "user-event";
+                        eventElement.textContent = event;
+                        userEventsDiv.appendChild(eventElement);
+                    });
+                }
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+}
+
+// Încarcă evenimentele utilizatorului la încărcarea paginii
+document.addEventListener("DOMContentLoaded", loadUserEvents);
+
 function dataURItoBlob(dataURI){
     const byteString = atob(dataURI.split(",")[1]);
     const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
