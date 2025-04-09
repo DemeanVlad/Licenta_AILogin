@@ -1,6 +1,10 @@
 # Licenta_AILogin
 delete DB
-- image: cd /Users/demeanvlad8/Desktop/Licenta_Martie/html_facerecogn
+- image:
+  -- cd /Users/demeanvlad8/Desktop/Licenta_Martie/html_facerecogn
+  -- ls
+  -- rn -rf *
+  -- ls
 - credentials:
   -- sqlite3 database.db
   -- DELETE * FROM users;
