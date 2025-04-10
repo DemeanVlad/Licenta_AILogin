@@ -3,41 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Face Recognition</title>
+    <title>Face Recognition Login</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style/styles.css') }}">
 </head>
 <body>
-    <div class="container">
-        <div class="left">
-            <video id="video" width="440" height="280" autoplay></video>
-            <br>
-            <button onclick="capture()">YOU CAPTURE PHOTO FACE</button>
-            <br>
-            <canvas id="canvas" width="400" height="280" style="display: none;"></canvas>
+    <div class="main-container">
+        <!-- Secțiunea pentru login cu inele animate -->
+        <div class="ring">
+            <i style="--clr:#00ff0a;"></i>
+            <i style="--clr:#ff0057;"></i>
+            <i style="--clr:#fffd44;"></i>
+            <div class="login">
+                <h2>REGISTER ACCOUNT</h2>
+                <div class="inputBx">
+                    <label for="nameInput">Your Name</label>
+                    <input type="text" id="nameInput" placeholder="Enter your name" required>
+                </div>
+                <div class="inputBx">
+                    <button class="primary-button" onclick="register()">REGISTER</button>
+                </div>
+            
+                <!-- Grupul de butoane LOGIN -->
+                <div class="button-group">
+                    <button class="secondary-button" onclick="login()">LOGIN WITH FACE</button>
+                    <button class="secondary-button" onclick="showLoginForm()">LOGIN WITH CREDENTIALS</button>
+                </div>
+            </div>
         </div>
-        <div class="right">
-            <h3>REGISTER ACCOUNT</h3>
-            <label for="name">Your name</label>
-            <input type="text" id="nameInput" required name="">
-            <br>
-            <button onclick="register()">REGISTER</button>
-            <button onclick="login()">LOGIN</button>
-            <br><br>
-            <button onclick="showLoginForm()">LOGHEAZĂ-TE FĂRĂ FAȚĂ</button>
+
+        <!-- Secțiunea pentru capturarea feței -->
+        <div class="video-section">
+            <h2>Face Recognition</h2>
+            <p>Log in securely using your face</p>
+            <div class="video-container">
+                <video id="video" autoplay></video>
+                <canvas id="canvas" style="display: none;"></canvas>
+            </div>
+            <button class="primary-button" onclick="capture()">CAPTURE PHOTO</button>
         </div>
     </div>
 
     <!-- Formular pentru autentificare cu username și parolă -->
     <div id="loginForm" style="display: none;">
         <h3>LOGIN WITH USERNAME AND PASSWORD</h3>
-        <label for="username">Username</label>
-        <input type="text" id="usernameInput" required>
-        <br>
-        <label for="password">Password</label>
-        <input type="password" id="passwordInput" required>
-        <br>
-        <button onclick="loginWithCredentials()">LOGIN</button>
-        <button onclick="hideLoginForm()">CANCEL</button>
+        <div class="inputBx">
+            <label for="usernameInput">Username</label>
+            <input type="text" id="usernameInput" placeholder="Enter your username" required>
+        </div>
+        <div class="inputBx">
+            <label for="passwordInput">Password</label>
+            <input type="password" id="passwordInput" placeholder="Enter your password" required>
+        </div>
+        <div class="inputBx">
+            <button class="primary-button" onclick="loginWithCredentials()">LOGIN</button>
+            <button class="secondary-button" onclick="hideLoginForm()">CANCEL</button>
+        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>

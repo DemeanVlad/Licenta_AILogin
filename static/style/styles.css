@@ -1,139 +1,389 @@
-/* General Styles */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(to right, #667eea, #764ba2);
-    color: #fff;
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap");
+
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Quicksand", sans-serif;
+}
+body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    background: #111;
+    width: 100%;
     overflow: hidden;
 }
 
-.container {
+.main-container {
     display: flex;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(15px);
-    border-radius: 16px;
-    padding: 30px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    width: 85%;
-    max-width: 1000px;
     justify-content: space-between;
+    align-items: center;
+    width: 90%;
+    max-width: 1200px;
     gap: 30px;
 }
 
-.left, .right {
+/* Ring Section */
+.ring {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.ring i {
+    position: absolute;
+    inset: 0;
+    border: 2px solid #fff;
+    transition: 0.5s;
+}
+
+.ring i:nth-child(1) {
+    border-radius: 38% 62% 63% 37% / 41% 44% 56% 59%;
+    animation: animate 6s linear infinite;
+}
+
+.ring i:nth-child(2) {
+    border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
+    animation: animate 4s linear infinite;
+}
+
+.ring i:nth-child(3) {
+    border-radius: 41% 44% 56% 59% / 38% 62% 63% 37%;
+    animation: animate2 10s linear infinite;
+}
+
+.ring:hover i {
+    border: 6px solid var(--clr);
+    filter: drop-shadow(0 0 20px var(--clr));
+}
+
+@keyframes animate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes animate2 {
+    0% {
+        transform: rotate(360deg);
+    }
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.login {
+    position: absolute;
+    width: 300px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.login h2 {
+    font-size: 2em;
+    color: #fff;
+}
+
+.login .inputBx {
+    position: relative;
+    width: 100%;
+}
+
+.login .inputBx input {
+    position: relative;
+    width: 100%;
+    padding: 12px 20px;
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 40px;
+    font-size: 1.2em;
+    color: #fff;
+    box-shadow: none;
+    outline: none;
+}
+
+.login .inputBx input[type="submit"] {
+    width: 100%;
+    background: #0078ff;
+    background: linear-gradient(45deg, #ff357a, #fff172);
+    border: none;
+    cursor: pointer;
+}
+
+.login .inputBx input::placeholder {
+    color: rgba(255, 255, 255, 0.75);
+}
+
+.login .links {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.login .links a {
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Video Section */
+.video-section {
     flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    text-align: center;
 }
 
-/* Video and Canvas */
-video, canvas {
+.video-section h2 {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.video-section p {
+    font-size: 16px;
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.video-container {
     border-radius: 12px;
+    overflow: hidden;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-    max-width: 100%;
+    width: 100%;
+    max-width: 400px;
     height: auto;
 }
 
-button {
-    background: linear-gradient(to right, #ff7eb3, #ff758c);
+video {
+    width: 100%;
+    height: auto;
+}
+
+/* Stil pentru butoane */
+button.primary-button {
+    background: linear-gradient(45deg, #ff357a, #fff172);
     border: none;
-    padding: 14px 24px;
-    border-radius: 10px;
+    padding: 15px 20px;
+    border-radius: 40px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 15px;
+    width: 100%; /* Face butonul să fie lung */
+    max-width: 300px; /* Dimensiune maximă */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
+
+button.primary-button:hover {
+    background: linear-gradient(45deg, #ff0057, #fffd44);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+button.secondary-button {
+    background: linear-gradient(45deg, #ff357a, #fff172);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 40px;
     color: white;
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 15px;
+    width: 48%; /* Fiecare buton ocupă jumătate din spațiu */
+    max-width: 140px; /* Dimensiune maximă */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
 }
 
-button:hover {
-    background: linear-gradient(to right, #ff5186, #ff3d6e);
+button.secondary-button:hover {
+    background: linear-gradient(45deg, #ff0057, #fffd44);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Form */
-.right h3, #loginForm h3 {
+/* Container pentru butoanele de jos */
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 300px; /* Dimensiunea totală a grupului */
+    margin-top: 20px;
+}
+
+/* Modal pentru login */
+#loginForm {
+    display: none; /* Ascuns implicit */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    z-index: 1000;
+    color: #fff;
+}
+
+/* Titlu pentru formular */
+#loginForm h3 {
     font-size: 24px;
     margin-bottom: 20px;
-    color: #ffebf0;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    color: #fff;
 }
 
-label {
+/* Stil pentru input-uri */
+#loginForm .inputBx {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+#loginForm .inputBx label {
+    font-size: 14px;
+    color: #ddd;
+    margin-bottom: 5px;
     display: block;
-    font-size: 16px;
-    margin-top: 15px;
-    color: #f0f0f0;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-input {
-    width: 85%;
+#loginForm .inputBx input {
+    width: 100%;
     padding: 12px;
-    margin-top: 8px;
-    border-radius: 10px;
+    border-radius: 8px;
     border: none;
     outline: none;
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.1);
     color: white;
     font-size: 14px;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
 
-input:focus {
-    background: rgba(255, 255, 255, 0.35);
+#loginForm .inputBx input:focus {
+    background: rgba(255, 255, 255, 0.2);
     box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-    font-style: italic;
-}
-
-/* Login Form */
-#loginForm {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(0, 0, 0, 0.8);
-    padding: 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-    display: none;
-    width: 90%;
-    max-width: 400px;
+/* Stil pentru butoane */
+#loginForm .primary-button {
+    background: linear-gradient(45deg, #ff357a, #fff172);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 40px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     text-align: center;
 }
 
-#loginForm button {
-    width: 100%;
-    margin-top: 10px;
+#loginForm .primary-button:hover {
+    background: linear-gradient(45deg, #ff0057, #fffd44);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        flex-direction: column;
-        text-align: center;
-        padding: 20px;
-    }
+#loginForm .secondary-button {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 12px 20px;
+    border-radius: 40px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-align: center;
+}
 
-    input {
-        width: 100%;
-    }
+#loginForm .secondary-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
 
-    button {
-        width: 100%;
-    }
+/* Secțiunea evenimentelor utilizatorului */
+.user-events-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    margin-top: 20px;
+}
+
+.user-events-section h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: #fff;
+    text-align: center;
+}
+
+#userEvents {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+#userEvents .event {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    width: 100%;
+    max-width: 300px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#userEvents .event:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+}
+
+#userEvents .event h3 {
+    font-size: 1.5em;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+#userEvents .event p {
+    font-size: 1em;
+    color: #aaa;
+    margin-bottom: 15px;
 }
