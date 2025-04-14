@@ -148,43 +148,61 @@ def success():
     user_name = request.args.get("user_name")
     return render_template("success.html", user_name=user_name)
 
-# Ruta pentru adăugarea unui eveniment
-@app.route("/add_event", methods=["POST"])
-def add_event():
-    username = request.form.get("username")
-    event_name = request.form.get("event_name")
+# Ruta pentru gestionarea evenimentelor
+@app.route("/my_events", methods=["GET"])
+def get_my_events():
+    # Verificăm dacă parametrul `user_name` este prezent în cerere
+    username = request.args.get("user_name")
+    if not username:
+        return jsonify({"success": False, "message": "Username is required."}), 400
+
+    # Dacă cererea vine din browser (HTML)
+    if "text/html" in request.headers.get("Accept", ""):
+        return render_template("my_events.html", user_name=username)
+
+    # Dacă cererea este pentru JSON (de exemplu, din Postman sau JavaScript)
+    try:
+        conn = sqlite3.connect('database.db')
+        cursor = conn.cursor()
+        cursor.execute('SELECT event_name FROM user_events WHERE username = ?', (username,))
+        events = cursor.fetchall()
+        conn.close()
+
+        # Returnăm evenimentele utilizatorului
+        return jsonify({"success": True, "events": [event[0] for event in events]})
+    except Exception as e:
+        return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
+    
+@app.route("/my_events", methods=["POST"])
+def post_my_events():
+    username = request.form.get("username")  # Obține username-ul din cererea POST
+    event_name = request.form.get("event_name")  # Obține numele evenimentului
+
+    if not username:
+        return jsonify({"success": False, "message": "Username is required."}), 400
+    if not event_name:
+        return jsonify({"success": False, "message": "Event name is required."}), 400
 
     try:
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
-        # Inserăm evenimentul în tabelul `user_events`
-        cursor.execute('''
-            INSERT INTO user_events (username, event_name)
-            VALUES (?, ?)
-        ''', (username, event_name))
+
+        # Verificăm dacă evenimentul există deja pentru utilizator
+        cursor.execute('SELECT * FROM user_events WHERE username = ? AND event_name = ?', (username, event_name))
+        existing_event = cursor.fetchone()
+
+        if existing_event:
+            conn.close()
+            return jsonify({"success": False, "message": "Event already exists for this user."}), 400
+
+        # Adăugăm evenimentul în baza de date
+        cursor.execute('INSERT INTO user_events (username, event_name) VALUES (?, ?)', (username, event_name))
         conn.commit()
         conn.close()
-        return jsonify({"success": True, "message": f"Event '{event_name}' added to your profile."})
-    except sqlite3.IntegrityError:
-        return jsonify({"success": False, "message": "You have already added this event."})
+
+        return jsonify({"success": True, "message": "Event added successfully."})
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
-# Ruta pentru obținerea evenimentelor utilizatorului
-@app.route("/get_user_events", methods=["GET"])
-def get_user_events():
-    username = request.args.get("username")  # Obține username-ul din cerere
-
-    try:
-        conn = sqlite3.connect('database.db')
-        cursor = conn.cursor()
-        # Selectăm doar evenimentele asociate cu username-ul utilizatorului curent
-        cursor.execute('SELECT event_name FROM user_events WHERE username = ?', (username,))
-        events = [row[0] for row in cursor.fetchall()]
-        conn.close()
-        return jsonify({"success": True, "events": events})
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)})
-
+        return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
+    
 if __name__ == "__main__":
     app.run(debug=True)

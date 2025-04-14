@@ -6,13 +6,13 @@
     <title>Success</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style/styles_success.css') }}">
 </head>
-<body>
+<body data-username="{{ user_name }}">
     <!-- Navbar -->
     <nav class="navbar">
         <div class="logo">Event Manager</div>
         <ul class="nav-links">
             <li><a href="#">Home</a></li>
-            <li><a href="#">My Events</a></li>
+            <li><a href="{{ url_for('get_my_events') }}?user_name={{ user_name }}">My Events</a></li>
             <li><a href="#">Profile</a></li>
             <li><a href="http://127.0.0.1:5000/index.html">Logout</a></li>
         </ul>
@@ -25,7 +25,6 @@
             <p>Explore the events and manage your participation.</p>
         </div>
 
-        <!-- Secțiunea pentru evenimente disponibile -->
         <div class="events-section">
             <h2>Available Events</h2>
             <div class="events">
@@ -87,15 +86,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Secțiunea pentru evenimentele utilizatorului -->
-        <div class="user-events-section">
-            <h2>Your Events</h2>
-            <div id="userEvents">
-                <p>No events selected yet.</p>
-            </div>
-        </div>
-    </div>
 
     <script>
         const userName = "{{ user_name }}"; // Obține username-ul utilizatorului conectat din Flask

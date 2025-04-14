@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styles_profile.css') }}">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Event Manager</div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}">Home</a></li>
+            <li><a href="{{ url_for('my_events') }}">My Events</a></li>
+            <li><a href="{{ url_for('index') }}">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="main-container">
+        <h1>Profile</h1>
+        <div class="profile-details">
+            <p><strong>Name:</strong> {{ user_name }}</p>
+            <p><strong>Email:</strong> {{ user_email }}</p>
+            <p><strong>Events Attended:</strong> <span id="eventCounter">0</span></p>
+        </div>
+    </div>
+</body>
+</html>

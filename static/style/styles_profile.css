@@ -1,0 +1,33 @@
+body {
+    font-family: "Quicksand", sans-serif;
+    background: linear-gradient(45deg, #111, #222);
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.main-container {
+    margin-top: 80px;
+    padding: 20px;
+    text-align: center;
+}
+
+.profile-details {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 12px;
+    display: inline-block;
+    text-align: left;
+}
