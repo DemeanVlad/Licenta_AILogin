@@ -2,31 +2,29 @@ let video;
 let canvas;
 let nameInput;
 
-function init(){
-    //and now if you run it will open instant camera
+function init() {
     video = document.getElementById("video");
     canvas = document.getElementById("canvas");
     nameInput = document.getElementById("nameInput");
 
-    //open webcam access
-    navigator.mediaDevices.getUserMedia({video:true})
-        .then(stream =>{
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
             video.srcObject = stream;
         })
-        .catch(error =>{
-            console.log("error camera", error);
-            alert("cannot open camera");
+        .catch(error => {
+            console.log("Error accessing camera:", error);
+            alert("Cannot open camera. Please check your device permissions.");
         });
 }
 
-function capture(){
+function capture() {
     const context = canvas.getContext("2d");
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
     canvas.style.display = "block";
     video.style.display = "none";
+    alert("Photo captured successfully!");
 }
 
-//and create register function
 function register() {
     const name = nameInput.value;
     const password = prompt("Enter your password:");
@@ -46,17 +44,17 @@ function register() {
         method: "POST",
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert("Registration successful!");
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert("Registration successful!");
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error during registration:", error);
+        });
 }
 
 function login() {
@@ -131,67 +129,85 @@ function loginWithCredentials() {
     });
 }
 
-// Funcția pentru a participa la un eveniment
-function participateInEvent(eventName) {
-    const formData = new FormData();
-    formData.append("username", userName); // Folosește variabila `userName` definită în JavaScript
-    formData.append("event_name", eventName);
 
-    fetch("/add_event", {
+function participateInEvent(eventName) {
+    const username = document.body.getAttribute("data-username"); // Obține username-ul din atributul data-username
+
+    if (!username) {
+        alert("Error: User not logged in.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("username", username); // Adaugă username-ul în FormData
+    formData.append("event_name", eventName); // Adaugă numele evenimentului în FormData
+
+    fetch("/my_events", {
         method: "POST",
         body: formData
     })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(data.message);
-            loadUserEvents(); // Reîncarcă evenimentele utilizatorului
-        } else {
-            alert("Error: " + data.message);
-        }
-    })
-    .catch(error => console.error("Error:", error));
-}
-
-// Funcția pentru a încărca evenimentele utilizatorului
-function loadUserEvents() {
-    fetch(`/get_user_events?username=${userName}`)
         .then(response => response.json())
         .then(data => {
-            const userEventsDiv = document.getElementById("userEvents");
-            userEventsDiv.innerHTML = ""; // Golește lista curentă
-
             if (data.success) {
-                if (data.events.length === 0) {
-                    userEventsDiv.innerHTML = "<p>You haven't participated in any events yet.</p>";
-                } else {
-                    data.events.forEach(event => {
-                        const eventElement = document.createElement("div");
-                        eventElement.className = "user-event";
-                        eventElement.textContent = event;
-                        userEventsDiv.appendChild(eventElement);
-                    });
-                }
+                alert(data.message);
+                loadUserEvents(); // Reîncarcă lista de evenimente
             } else {
                 alert("Error: " + data.message);
             }
         })
-        .catch(error => console.error("Error:", error));
+        .catch(error => console.error("Error during event participation:", error));
 }
 
-// Încarcă evenimentele utilizatorului la încărcarea paginii
-document.addEventListener("DOMContentLoaded", loadUserEvents);
+function loadUserEvents() {
+    const userEventsContainer = document.getElementById("userEvents");
+    const username = document.body.getAttribute("data-username"); // Obține username-ul din atributul data-username
 
-function dataURItoBlob(dataURI){
+    if (!username) {
+        userEventsContainer.innerHTML = "<p>Error: User not logged in.</p>";
+        return;
+    }
+
+    userEventsContainer.innerHTML = "<p>Loading your events...</p>";
+
+    // Trimitem cererea GET către backend pentru a obține evenimentele utilizatorului
+    fetch(`/my_events?user_name=${username}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const events = data.events;
+                if (events.length === 0) {
+                    userEventsContainer.innerHTML = "<p>No events selected yet.</p>";
+                } else {
+                    // Afișăm evenimentele în div-ul #userEvents
+                    userEventsContainer.innerHTML = events
+                        .map(event => `<div class="event-item">${event}</div>`)
+                        .join("");
+                }
+            } else {
+                userEventsContainer.innerHTML = `<p>Error: ${data.message}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error("Error loading user events:", error);
+            userEventsContainer.innerHTML = "<p>Failed to load events. Please try again later.</p>";
+        });
+}
+
+// Funcție pentru conversia unei imagini DataURI în Blob
+function dataURItoBlob(dataURI) {
     const byteString = atob(dataURI.split(",")[1]);
     const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
 
     const ab = new ArrayBuffer(byteString.length);
     const ia = new Uint8Array(ab);
-    for(let i = 0; i < byteString.length; i++){
+    for (let i = 0; i < byteString.length; i++) {
         ia[i] = byteString.charCodeAt(i);
     }
-    return new Blob([ab], {type: mimeString});
+    return new Blob([ab], { type: mimeString });
 }
 
-init();
+// Inițializăm camera și încărcăm evenimentele utilizatorului la încărcarea paginii
+document.addEventListener("DOMContentLoaded", () => {
+    init();
+    loadUserEvents();
+});
