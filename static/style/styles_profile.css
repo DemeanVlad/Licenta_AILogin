@@ -1,33 +1,98 @@
-body {
-    font-family: "Quicksand", sans-serif;
-    background: linear-gradient(45deg, #111, #222);
-    color: #fff;
+@import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@300&display=swap");
+
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+    font-family: "Quicksand", sans-serif;
 }
 
-.navbar {
-    background: rgba(0, 0, 0, 0.8);
-    padding: 15px 30px;
+body {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
+    background: linear-gradient(45deg, #111, #222);
+    min-height: 100vh;
+    color: #fff;
+    padding: 20px;
+    overflow-x: hidden;
 }
 
-.main-container {
-    margin-top: 80px;
-    padding: 20px;
+.container {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+    max-width: 600px;
+    width: 100%;
     text-align: center;
 }
 
-.profile-details {
-    background: rgba(255, 255, 255, 0.1);
+header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+header p {
+    font-size: 1.2em;
+    color: #bbb;
+    margin-bottom: 30px;
+}
+
+section {
+    margin-bottom: 30px;
+}
+
+.user-info, .user-events {
+    background: rgba(255, 255, 255, 0.07);
     padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.user-info h2, .user-events h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.user-info p, .user-events p {
+    font-size: 1em;
+    color: #ccc;
+}
+
+.user-events ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+.user-events li {
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    padding: 10px 15px;
     border-radius: 12px;
-    display: inline-block;
-    text-align: left;
+    color: #eee;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.user-events li:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateX(5px);
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .container {
+        padding: 30px 20px;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    .user-info h2, .user-events h2 {
+        font-size: 1.5em;
+    }
 }

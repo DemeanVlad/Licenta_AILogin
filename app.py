@@ -203,6 +203,29 @@ def post_my_events():
         return jsonify({"success": True, "message": "Event added successfully."})
     except Exception as e:
         return jsonify({"success": False, "message": f"An error occurred: {str(e)}"}), 500
-    
+
+@app.route("/profile", methods=["GET"])
+def profile():
+    user_name = request.args.get("user_name")
+    if not user_name:
+        return jsonify({"success": False, "message": "Username is required."}), 400
+
+    # Obținem informațiile utilizatorului din baza de date
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT username FROM users WHERE username = ?', (user_name,))
+    user = cursor.fetchone()
+
+    if not user:
+        return jsonify({"success": False, "message": "User not found."}), 404
+
+    # Obținem evenimentele utilizatorului
+    cursor.execute('SELECT event_name FROM user_events WHERE username = ?', (user_name,))
+    events = cursor.fetchall()
+    conn.close()
+
+    # Transmitem informațiile către template-ul HTML
+    return render_template("profile.html", user_name=user_name, events=[event[0] for event in events])
+
 if __name__ == "__main__":
     app.run(debug=True)
