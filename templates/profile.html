@@ -7,22 +7,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style/styles_profile.css') }}">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="logo">Event Manager</div>
-        <ul class="nav-links">
-            <li><a href="{{ url_for('index') }}">Home</a></li>
-            <li><a href="{{ url_for('my_events') }}">My Events</a></li>
-            <li><a href="{{ url_for('index') }}">Logout</a></li>
-        </ul>
-    </nav>
+    <div class="container">
+        <header>
+            <h1>Profile</h1>
+            <p>Welcome, {{ user_name }}!</p>
+        </header>
 
-    <div class="main-container">
-        <h1>Profile</h1>
-        <div class="profile-details">
-            <p><strong>Name:</strong> {{ user_name }}</p>
-            <p><strong>Email:</strong> {{ user_email }}</p>
-            <p><strong>Events Attended:</strong> <span id="eventCounter">0</span></p>
-        </div>
+        <section class="user-info">
+            <h2>Your Information</h2>
+            <p><strong>Username:</strong> {{ user_name }}</p>
+        </section>
+
+        <section class="user-events">
+            <h2>Your Events</h2>
+            {% if events %}
+                <ul>
+                    {% for event in events %}
+                        <li>{{ event }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>You are not participating in any events yet.</p>
+            {% endif %}
+        </section>
     </div>
 </body>
 </html>

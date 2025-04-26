@@ -11,9 +11,9 @@
     <nav class="navbar">
         <div class="logo">Event Manager</div>
         <ul class="nav-links">
-            <li><a href="#">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="{{ url_for('get_my_events') }}?user_name={{ user_name }}">My Events</a></li>
-            <li><a href="#">Profile</a></li>
+            <li><a href="{{ url_for('profile') }}?user_name={{ user_name }}">Profile</a></li>
             <li><a href="http://127.0.0.1:5000/index.html">Logout</a></li>
         </ul>
     </nav>
