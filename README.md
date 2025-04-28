@@ -116,23 +116,3 @@ Aplicația **Face Recognition Event Manager** este o platformă web care utilize
 
 ---
 
-### **Posibile îmbunătățiri**
-
-1. **Notificări pentru utilizatori**:
-   - Adaugă notificări pentru evenimentele viitoare (de exemplu, prin e-mail sau notificări push).
-
-2. **Suport pentru mai multe limbi**:
-   - Adaugă suport pentru traduceri pentru a face aplicația accesibilă unui public mai larg.
-
-3. **Statistici pentru administratori**:
-   - Oferă statistici despre utilizatori și evenimente (de exemplu, numărul de participanți la un eveniment).
-
-4. **Integrare cu servicii externe**:
-   - Integrează aplicația cu servicii de plată pentru evenimente plătite.
-
-5. **Securitate îmbunătățită**:
-   - Adaugă autentificare cu doi factori (2FA) pentru utilizatori.
-
----
-
-Dacă dorești să implementezi alte funcționalități sau să îmbunătățești aplicația, spune-mi și te voi ajuta! 😊
