@@ -118,8 +118,13 @@ function loginWithCredentials() {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            alert(`Welcome, ${data.username}!`);
-            window.location.href = "/success?user_name=" + data.username;
+            if (data.role === "admin") {
+                // Redirecționează către interfața de admin
+                window.location.href = "/admin";
+            } else {
+                // Redirecționează către interfața de utilizator
+                window.location.href = "/success?user_name=" + username;
+            }
         } else {
             alert(data.message);
         }
@@ -128,7 +133,6 @@ function loginWithCredentials() {
         console.error("Error:", error);
     });
 }
-
 
 function participateInEvent(eventName) {
     const username = document.body.getAttribute("data-username"); // Obține username-ul din atributul data-username
@@ -206,46 +210,64 @@ function dataURItoBlob(dataURI) {
     return new Blob([ab], { type: mimeString });
 }
 
-function saveEvent(eventName) {
-    fetch('/save_event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            username: document.body.dataset.username,
-            event_name: eventName
+function loadEvents() {
+    console.log("Loading events..."); // Debugging
+    fetch("/get_events")
+        .then(response => response.json())
+        .then(data => {
+            console.log("Events received:", data.events); // Debugging
+            const eventSelect = document.getElementById("eventSelect");
+            if (data.events.length === 0) {
+                eventSelect.innerHTML = "<option>No events available</option>";
+            } else {
+                eventSelect.innerHTML = data.events
+                    .map(event => `<option value="${event}">${event}</option>`)
+                    .join("");
+            }
         })
+        .catch(error => console.error("Error loading events:", error));
+}
+
+
+function verifyAccess(eventName) {
+    const context = canvas.getContext("2d");
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    const photo = dataURItoBlob(canvas.toDataURL());
+
+    if (!photo) {
+        alert("Photo is required.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("event_name", eventName);
+    formData.append("photo", photo, "access.jpg");
+
+    fetch("/verify_access", {
+        method: "POST",
+        body: formData
     })
     .then(response => response.json())
     .then(data => {
+        const resultDiv = document.getElementById("verificationResult");
         if (data.success) {
-            alert(data.message);
+            resultDiv.innerHTML = `<p style="color: green;">${data.message}</p>`;
         } else {
-            alert(data.message);
+            resultDiv.innerHTML = `<p style="color: red;">${data.message}</p>`;
         }
     })
     .catch(error => {
-        console.error('Error:', error);
-        alert('An error occurred while saving the event.');
-    });
-}
-
-function deleteSavedEvent(eventName) {
-    const username = document.body.dataset.username;
-
-    fetch('/delete_saved_event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, event_name: eventName })
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        location.reload();
+        console.error("Error during access verification:", error);
     });
 }
 
 // Inițializăm camera și încărcăm evenimentele utilizatorului la încărcarea paginii
 document.addEventListener("DOMContentLoaded", () => {
-    init();
-    loadUserEvents();
+    init(); // Inițializează camera
+    loadEvents(); // Încarcă lista de evenimente pentru admin
+
+    // Apelează `loadUserEvents` doar dacă elementul există
+    if (document.getElementById("userEvents")) {
+        loadUserEvents();
+    }
 });

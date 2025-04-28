@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/styles_admin.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</head>
+<body>
+    <h1>Admin Panel</h1>
+
+    <div class="top-container">
+        <!-- Camera Section -->
+        <div class="section">
+            <h2>Camera</h2>
+            <video id="video" autoplay></video>
+            <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
+            <br>
+            <button onclick="capture()">Capture Photo</button>
+        </div>
+
+        <!-- Select Event Section -->
+        <div class="section">
+            <h2>Select Event</h2>
+            <label for="eventSelect">Choose an event:</label><br>
+            <select id="eventSelect">
+                <!-- Options will be populated dynamically -->
+            </select>
+            <br>
+            <button onclick="verifyAccess(document.getElementById('eventSelect').value)">Verify Access</button>
+        </div>
+    </div>
+
+    <div class="bottom-container">
+        <!-- Verification Status -->
+        <div class="status-section">
+            <h2>Status</h2>
+            <div id="verificationResult">Waiting for action...</div>
+        </div>
+    </div>
+</body>
+</html>
