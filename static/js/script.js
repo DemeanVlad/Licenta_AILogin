@@ -206,6 +206,44 @@ function dataURItoBlob(dataURI) {
     return new Blob([ab], { type: mimeString });
 }
 
+function saveEvent(eventName) {
+    fetch('/save_event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username: document.body.dataset.username,
+            event_name: eventName
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message);
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while saving the event.');
+    });
+}
+
+function deleteSavedEvent(eventName) {
+    const username = document.body.dataset.username;
+
+    fetch('/delete_saved_event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, event_name: eventName })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    });
+}
+
 // Inițializăm camera și încărcăm evenimentele utilizatorului la încărcarea paginii
 document.addEventListener("DOMContentLoaded", () => {
     init();
