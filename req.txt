@@ -1,0 +1,4 @@
+Flask
+Werkzeug
+face_recognition
+numpy
