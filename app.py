@@ -137,6 +137,9 @@ def login():
     users = cursor.fetchall()
 
     for username, face_encoding_json in users:
+        if face_encoding_json is None:
+            continue  # Sărim peste utilizatorii fără un vector facial
+
         stored_face_encoding = json.loads(face_encoding_json)
         matches = face_recognition.compare_faces([stored_face_encoding], login_face_encoding)
         if any(matches):
