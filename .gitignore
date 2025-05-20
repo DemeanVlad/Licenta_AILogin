@@ -1,0 +1,14 @@
+# Ignoră directorul virtual environment
+venv/
+
+# Ignoră fișierele temporare Python
+*.pyc
+__pycache__/
+
+# Ignoră fișierele de sistem macOS
+.DS_Store
+
+# Ignoră alte fișiere mari sau inutile
+*.dylib
+*.dat
+*.so
