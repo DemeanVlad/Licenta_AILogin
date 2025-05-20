@@ -8,7 +8,13 @@ __pycache__/
 # Ignoră fișierele de sistem macOS
 .DS_Store
 
-# Ignoră alte fișiere mari sau inutile
+# Ignoră fișierele mari sau inutile
 *.dylib
 *.dat
 *.so
+
+# Ignoră baza de date SQLite
+*.db
+
+# Ignoră fișierele încărcate de utilizatori
+static/uploads/
