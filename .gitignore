@@ -20,6 +20,13 @@ __pycache__/
 static/uploads/
 
 secret.key
+# Ignore TensorFlow/Keras model files
+*.h5
 
+# Ignore Haarcascade XML files
+*.xml
+
+# Ignore TensorBoard logs
+logs/
 .haarcascade_frontalface_default.xml
 PYTHONPATH=/Users/demeanvlad8/Desktop/licenta_20mai_backup
