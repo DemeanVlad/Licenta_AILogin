@@ -18,3 +18,8 @@ __pycache__/
 
 # Ignoră fișierele încărcate de utilizatori
 static/uploads/
+
+secret.key
+
+.haarcascade_frontalface_default.xml
+PYTHONPATH=/Users/demeanvlad8/Desktop/licenta_20mai_backup
