@@ -115,4 +115,10 @@ Aplicația **Face Recognition Event Manager** este o platformă web care utilize
   - FullCalendar (opțional): Pentru afișarea evenimentelor într-un calendar.
 
 ---
-
+Flask
+Werkzeug
+face_recognition
+numpy
+tensorflow
+opencv-python
+scikit-learn
