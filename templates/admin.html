@@ -9,7 +9,17 @@
 </head>
 <body>
     <h1>Admin Panel</h1>
-
+        <!-- ...existing code... -->
+    <h2>Backup și restaurare bază de date</h2>
+    <form action="{{ url_for('admin_backup') }}" method="post">
+        <button type="submit">Descarcă backup criptat</button>
+    </form>
+    <br>
+    <form action="{{ url_for('admin_restore') }}" method="post" enctype="multipart/form-data">
+        <input type="file" name="backup_file" required>
+        <button type="submit">Restaurare backup criptat</button>
+    </form>
+    <!-- ...existing code... -->
     <div class="top-container">
         <!-- Camera Section -->
         <div class="section">
@@ -39,5 +49,6 @@
             <div id="verificationResult">Waiting for action...</div>
         </div>
     </div>
+
 </body>
 </html>

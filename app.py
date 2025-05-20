@@ -5,7 +5,7 @@ from cryptography.fernet import Fernet
 import base64
 import json
 import time
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_file, redirect, url_for, flash
 import sqlite3
 import face_recognition
 from tensorflow.keras.models import load_model
@@ -222,6 +222,58 @@ def predict():
 @app.route("/admin")
 def admin_panel():
     return render_template("admin.html")
+
+
+@app.route("/admin/backup", methods=["POST"])
+def admin_backup():
+    # Doar adminul are voie (adaugă verificare dacă ai sesiuni)
+    import shutil
+    from cryptography.fernet import Fernet
+
+    DB_PATH = "database.db"
+    BACKUP_PATH = "database_backup.db"
+    ENCRYPTED_BACKUP_PATH = "database_backup.db.enc"
+    KEY_PATH = "secret.key"
+
+    shutil.copyfile(DB_PATH, BACKUP_PATH)
+    with open(KEY_PATH, "rb") as f:
+        key = f.read()
+    fernet = Fernet(key)
+    with open(BACKUP_PATH, "rb") as f:
+        data = f.read()
+    encrypted_data = fernet.encrypt(data)
+    with open(ENCRYPTED_BACKUP_PATH, "wb") as f:
+        f.write(encrypted_data)
+    os.remove(BACKUP_PATH)
+    # Trimite fișierul criptat la download
+    return send_file(ENCRYPTED_BACKUP_PATH, as_attachment=True)
+
+@app.route("/admin/restore", methods=["POST"])
+def admin_restore():
+    # Doar adminul are voie (adaugă verificare dacă ai sesiuni)
+    from cryptography.fernet import Fernet
+
+    ENCRYPTED_BACKUP_PATH = "database_backup.db.enc"
+    RESTORED_DB_PATH = "database.db"
+    KEY_PATH = "secret.key"
+
+    if "backup_file" not in request.files:
+        flash("No file uploaded!")
+        return redirect(url_for("admin_page"))
+
+    file = request.files["backup_file"]
+    file.save(ENCRYPTED_BACKUP_PATH)
+
+    with open(KEY_PATH, "rb") as f:
+        key = f.read()
+    fernet = Fernet(key)
+    with open(ENCRYPTED_BACKUP_PATH, "rb") as f:
+        encrypted_data = f.read()
+    decrypted_data = fernet.decrypt(encrypted_data)
+    with open(RESTORED_DB_PATH, "wb") as f:
+        f.write(decrypted_data)
+    flash("Backup restaurat cu succes!")
+    return redirect(url_for("admin_page"))
 
 @app.route("/verify_access", methods=["POST"])
 def verify_access():
