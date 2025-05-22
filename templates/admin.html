@@ -9,17 +9,6 @@
 </head>
 <body>
     <h1>Admin Panel</h1>
-        <!-- ...existing code... -->
-    <h2>Backup și restaurare bază de date</h2>
-    <form action="{{ url_for('admin_backup') }}" method="post">
-        <button type="submit">Descarcă backup criptat</button>
-    </form>
-    <br>
-    <form action="{{ url_for('admin_restore') }}" method="post" enctype="multipart/form-data">
-        <input type="file" name="backup_file" required>
-        <button type="submit">Restaurare backup criptat</button>
-    </form>
-    <!-- ...existing code... -->
     <div class="top-container">
         <!-- Camera Section -->
         <div class="section">
@@ -30,16 +19,16 @@
             <button onclick="capture()">Capture Photo</button>
         </div>
 
-        <!-- Select Event Section -->
         <div class="section">
             <h2>Select Event</h2>
             <label for="eventSelect">Choose an event:</label><br>
             <select id="eventSelect">
-                <!-- Options will be populated dynamically -->
+                <!-- Options will be populate dynamically -->
             </select>
             <br>
             <button onclick="verifyAccess(document.getElementById('eventSelect').value)">Verify Access</button>
         </div>
+        <div id="verificationResult"></div>
     </div>
 
     <div class="bottom-container">
@@ -49,6 +38,10 @@
             <div id="verificationResult">Waiting for action...</div>
         </div>
     </div>
-
 </body>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadUserEvents(); // Încarcă evenimentele utilizatorului
+    });
+</script>
 </html>

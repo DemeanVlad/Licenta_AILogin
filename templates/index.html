@@ -15,14 +15,24 @@
             <i style="--clr:#fffd44;"></i>
             <div class="login">
                 <h2>REGISTER ACCOUNT</h2>
-                <div class="inputBx">
-                    <label for="nameInput">Your Name</label>
-                    <input type="text" id="nameInput" placeholder="Enter your name" required>
-                </div>
-                <div class="inputBx">
-                    <button class="primary-button" onclick="register()">REGISTER</button>
-                </div>
-            
+                <form id="registerForm" enctype="multipart/form-data">
+                    <div class="inputBx">
+                        <label for="nameInput">Your Name</label>
+                        <input type="text" name="name" id="nameInput" placeholder="Enter your name" required>
+                    </div>
+                    <div class="inputBx">
+                        <label for="emailInput">Email</label>
+                        <input type="email" name="email" id="emailInput" placeholder="Enter your email" required>
+                    </div>
+                    <div class="inputBx">
+                        <label for="passwordInput">Password</label>
+                        <input type="password" name="password" id="passwordInput" placeholder="Enter your password" required>
+                    </div>
+                    <div class="inputBx">
+                        <button class="primary-button" type="button" onclick="register()">REGISTER</button>
+                    </div>
+                </form>
+                <div id="registerMessage"></div>
                 <!-- Grupul de butoane LOGIN -->
                 <div class="button-group">
                     <button class="secondary-button" onclick="login()">LOGIN WITH FACE</button>
@@ -44,21 +54,21 @@
     </div>
 
     <!-- Formular pentru autentificare cu username și parolă -->
-    <div id="loginForm" style="display: none;">
-        <h3>LOGIN WITH USERNAME AND PASSWORD</h3>
-        <div class="inputBx">
-            <label for="usernameInput">Username</label>
-            <input type="text" id="usernameInput" placeholder="Enter your username" required>
-        </div>
-        <div class="inputBx">
-            <label for="passwordInput">Password</label>
-            <input type="password" id="passwordInput" placeholder="Enter your password" required>
-        </div>
-        <div class="inputBx">
-            <button class="primary-button" onclick="loginWithCredentials()">LOGIN</button>
-            <button class="secondary-button" onclick="hideLoginForm()">CANCEL</button>
-        </div>
+<div id="loginForm" style="display: none;">
+    <h3>LOGIN WITH USERNAME AND PASSWORD</h3>
+    <div class="inputBx">
+        <label for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" placeholder="Enter your username" required>
     </div>
+    <div class="inputBx">
+        <label for="loginPasswordInput">Password</label>
+        <input type="password" id="loginPasswordInput" placeholder="Enter your password" required>
+    </div>
+    <div class="inputBx">
+        <button class="primary-button" onclick="loginWithCredentials()">LOGIN</button>
+        <button class="secondary-button" onclick="hideLoginForm()">CANCEL</button>
+    </div>
+</div>
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>

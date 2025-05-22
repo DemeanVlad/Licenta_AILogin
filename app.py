@@ -39,13 +39,6 @@ else:
     class_indices = {}
     class_labels = {}
 
-# Funcții auxiliare
-def preprocess_image(image_path, target_size=(128, 128)):
-    img = load_img(image_path, target_size=target_size)
-    img_array = img_to_array(img)
-    img_array = np.expand_dims(img_array, axis=0)
-    return img_array
-
 def init_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -53,6 +46,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT NOT NULL UNIQUE,
+            email TEXT NOT NULL UNIQUE,
             password BLOB NOT NULL,
             face_encoding TEXT,
             role TEXT DEFAULT 'user'
@@ -69,19 +63,13 @@ def init_db():
     conn.commit()
     conn.close()
 
-def create_admin_user():
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = 'admin'")
-    if cursor.fetchone() is None:
-        admin_password = "admin123"
-        hashed_password = bcrypt.hashpw(admin_password.encode(), bcrypt.gensalt())
-        cursor.execute('''
-            INSERT INTO users (username, password, face_encoding, role)
-            VALUES (?, ?, ?, ?)
-        ''', ("admin", hashed_password, None, "admin"))
-        conn.commit()
-    conn.close()
+# Funcții auxiliare
+def preprocess_image(image_path, target_size=(128, 128)):
+    img = load_img(image_path, target_size=target_size)
+    img_array = img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    return img_array
+
 
 def hash_password(password):
     return bcrypt.hashpw(password.encode(), bcrypt.gensalt())
@@ -107,6 +95,7 @@ def index():
 @app.route("/register", methods=["POST"])
 def register():
     name = request.form.get("name")
+    email = request.form.get("email")
     password = request.form.get("password")
     photo = request.files['photo']
 
@@ -123,21 +112,42 @@ def register():
         return jsonify({"success": False, "message": "No face detected in the image."})
 
     face_encoding = face_encodings[0]
-    hashed_password = hash_password(password)
-    encrypted_face_encoding = encrypt_face_vector(face_encoding.tolist())
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+    encrypted_face_encoding = fernet.encrypt(str(face_encoding.tolist()).encode())
 
     try:
         conn = sqlite3.connect('database.db')
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO users (username, password, face_encoding, role)
-            VALUES (?, ?, ?, ?)
-        ''', (name, hashed_password, encrypted_face_encoding, "user"))
+            INSERT INTO users (username, email, password, face_encoding, role)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name, email, hashed_password, encrypted_face_encoding, "user"))
         conn.commit()
         conn.close()
-        return redirect(url_for("success", user_name=name))
+        return jsonify({"success": True, "message": "Registration successful."})
     except sqlite3.IntegrityError:
-        return jsonify({"success": False, "message": "Username already exists."})
+        return jsonify({"success": False, "message": "Username or email already exists."})
+
+@app.route("/login_with_credentials", methods=["POST"])
+def login_with_credentials():
+    username = request.form.get("username")
+    password = request.form.get("password")
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT password, role FROM users WHERE username = ?', (username,))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result is None:
+        return jsonify({"success": False, "message": "Invalid username or password."})
+
+    stored_password, role = result
+    if bcrypt.checkpw(password.encode(), stored_password):
+        return jsonify({"success": True, "message": "Login successful.", "role": role})
+    else:
+        return jsonify({"success": False, "message": "Invalid username or password."})
+
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -178,33 +188,21 @@ def login():
 
     return jsonify({"success": False, "message": "No matching face found."})
 
-@app.route("/login_with_credentials", methods=["POST"])
-def login_with_credentials():
-    username = request.form.get("username")
-    password = request.form.get("password")
-
-    conn = sqlite3.connect('database.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT password, role FROM users WHERE username = ?', (username,))
-    result = cursor.fetchone()
-    conn.close()
-
-    if result is None:
-        return jsonify({"success": False, "message": "Invalid username or password."})
-
-    stored_password, role = result
-    if check_password(password, stored_password):
-        if role == "admin":
-            return jsonify({"success": True, "message": "Admin login successful.", "role": "admin"})
-        else:
-            return jsonify({"success": True, "message": "User login successful.", "role": "user"})
-    else:
-        return jsonify({"success": False, "message": "Invalid username or password."})
-
 @app.route("/success")
 def success():
     user_name = request.args.get("user_name")
-    return render_template("success.html", user_name=user_name)
+
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT email FROM users WHERE username = ?', (user_name,))
+    result = cursor.fetchone()
+    conn.close()
+
+    if result:
+        user_email = result[0]
+        return render_template("success.html", user_name=user_name, user_email=user_email)
+    else:
+        return jsonify({"success": False, "message": "User not found."})
 
 @app.route("/profile", methods=["GET"])
 def profile():
@@ -226,7 +224,11 @@ def profile():
 
     return render_template("profile.html", user_name=user_name, events=[event[0] for event in events])
 
-@app.route("/get_my_events", methods=["GET"])
+@app.route("/admin")
+def admin_panel():
+    return render_template("admin.html")
+
+@app.route("/get_events", methods=["GET"])
 def get_events():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
@@ -234,6 +236,7 @@ def get_events():
     events = cursor.fetchall()
     conn.close()
 
+    # Returnează evenimentele sub formă de JSON
     return jsonify({"events": [event[0] for event in events]})
 
 @app.route("/my_events", methods=["GET", "POST"])
@@ -248,8 +251,7 @@ def my_events():
         cursor.execute('SELECT event_name FROM user_events WHERE username = ?', (username,))
         events = cursor.fetchall()
         conn.close()
-
-        return render_template("my_events.html", user_name=username, events=[event[0] for event in events])
+        return jsonify({"success": True, "events": [event[0] for event in events]})
 
     elif request.method == "POST":
         username = request.form.get("username")
@@ -272,9 +274,6 @@ def my_events():
         conn.close()
 
         return jsonify({"success": True, "message": "Event added successfully."})
-@app.route("/admin")
-def admin_panel():
-    return render_template("admin.html")
 
 @app.route("/verify_access", methods=["POST"])
 def verify_access():
@@ -318,6 +317,6 @@ def verify_access():
     return jsonify({"success": False, "message": "Access denied. No matching face found for this event."})
 
 if __name__ == "__main__":
-    init_db()
-    create_admin_user()
+    from db import init_db # Importă funcțiile din db.py
+    init_db()  # Inițializează baza de date
     app.run(debug=True)
