@@ -30,3 +30,8 @@ secret.key
 logs/
 .haarcascade_frontalface_default.xml
 PYTHONPATH=/Users/demeanvlad8/Desktop/licenta_20mai_backup
+
+# Ignore large files
+venv/lib/python3.11/site-packages/tensorflow/compiler/mlir/stablehlo/stablehlo_extension.so
+venv/lib/python3.11/site-packages/clang/native/libclang.dylib
+venv/lib/python3.11/site-packages/face_recognition_models/models/shape_predictor_68_face_landmarks.dat
