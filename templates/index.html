@@ -64,6 +64,11 @@
         <label for="loginPasswordInput">Password</label>
         <input type="password" id="loginPasswordInput" placeholder="Enter your password" required>
     </div>
+    <!-- Câmp pentru OTP, ascuns inițial -->
+    <div class="inputBx" id="otpSection" style="display: none;">
+        <label for="otpInput">OTP</label>
+        <input type="text" id="otpInput" placeholder="Enter the OTP sent to your email">
+    </div>
     <div class="inputBx">
         <button class="primary-button" onclick="loginWithCredentials()">LOGIN</button>
         <button class="secondary-button" onclick="hideLoginForm()">CANCEL</button>

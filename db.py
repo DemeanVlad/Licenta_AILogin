@@ -5,6 +5,8 @@ def init_db():
     print("Initializing database...")  # Mesaj de debug
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
+    
+    # Crearea tabelelor
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +25,18 @@ def init_db():
             FOREIGN KEY (username) REFERENCES users (username) ON DELETE CASCADE
         )
     ''')
+
+    # Adăugarea coloanelor pentru OTP (dacă nu există deja)
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN otp TEXT')
+    except sqlite3.OperationalError:
+        print("Column 'otp' already exists.")
+
+    try:
+        cursor.execute('ALTER TABLE users ADD COLUMN otp_timestamp DATETIME')
+    except sqlite3.OperationalError:
+        print("Column 'otp_timestamp' already exists.")
+
     conn.commit()
     conn.close()
     print("Database initialized.")  # Mesaj de debug

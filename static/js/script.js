@@ -110,6 +110,7 @@ function hideLoginForm() {
 function loginWithCredentials() {
     const username = document.getElementById("usernameInput").value;
     const password = document.getElementById("loginPasswordInput").value;
+    const otp = document.getElementById("otpInput").value; // OTP-ul, dacă este completat
 
     if (!username || !password) {
         alert("Please enter both username and password.");
@@ -119,6 +120,9 @@ function loginWithCredentials() {
     const formData = new FormData();
     formData.append("username", username);
     formData.append("password", password);
+    if (otp) {
+        formData.append("otp", otp); // Adaugă OTP-ul dacă este completat
+    }
 
     fetch("/login_with_credentials", {
         method: "POST",
@@ -126,12 +130,12 @@ function loginWithCredentials() {
     })
         .then(response => response.json())
         .then(data => {
-            if (data.success) {
-                if (data.role === "admin") {
-                    window.location.href = "/admin";
-                } else {
-                    window.location.href = `/success?user_name=${username}`;
-                }
+            if (data.success && data.message === "OTP sent to your email. Please enter it to complete authentication.") {
+                alert("OTP sent to your email. Please check your inbox.");
+                document.getElementById("otpSection").style.display = "block"; // Afișează câmpul OTP
+            } else if (data.success) {
+                alert("Authentication successful!");
+                window.location.href = "/success?user_name=" + username;
             } else {
                 alert(data.message);
             }
@@ -141,7 +145,6 @@ function loginWithCredentials() {
             alert("An error occurred. Please try again.");
         });
 }
-
 function participateInEvent(eventName) {
     const username = document.body.getAttribute("data-username"); // Obține username-ul din atributul data-username
 
@@ -281,9 +284,6 @@ function verifyAccess(eventName) {
         });
 }
 
-
-
-// Inițializăm camera și încărcăm evenimentele utilizatorului la încărcarea paginii
 document.addEventListener("DOMContentLoaded", () => {
     init(); // Inițializează camera
     loadEvents(); // Încarcă lista de evenimente pentru admin
@@ -291,5 +291,32 @@ document.addEventListener("DOMContentLoaded", () => {
     // Apelează `loadUserEvents` doar dacă elementul există
     if (document.getElementById("userEvents")) {
         loadUserEvents();
+    }
+
+    // Adaugă event listener pentru formularul de login
+    const loginForm = document.getElementById("login-form");
+    if (loginForm) {
+        loginForm.addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const response = await fetch("/login_with_credentials", {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            if (result.success && result.message === "OTP sent to your email. Please enter it to complete authentication.") {
+                alert("OTP sent to your email. Please check your inbox.");
+                document.getElementById("otp-section").style.display = "block";
+            } else if (result.success) {
+                alert("Authentication successful!");
+                window.location.href = "/success";
+            } else {
+                alert(result.message);
+            }
+        });
+    } else {
+        console.error("Login form not found in DOM.");
     }
 });

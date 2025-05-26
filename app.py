@@ -9,6 +9,30 @@ import face_recognition
 from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array, load_img
 import numpy as np
+import random
+import smtplib
+from datetime import datetime, timedelta
+
+def generate_otp():
+    """Generează un cod OTP de 6 cifre."""
+    return str(random.randint(100000, 999999))
+
+def send_otp_email(email, otp):
+    """Trimite codul OTP prin email."""
+    sender_email = "demeanvlad8@gmail.com"
+    sender_password = "pbzk fqut ktps eqsw"  # Parola generată pentru aplicație
+    subject = "Your OTP Code"
+    body = f"Your OTP code is: {otp}. It is valid for 5 minutes."
+
+    message = f"Subject: {subject}\n\n{body}"
+
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(sender_email, sender_password)
+            server.sendmail(sender_email, email, message)
+    except Exception as e:
+        print("Error sending email:", e)
 
 # Verifică dacă secret.key există, altfel generează unul nou
 if not os.path.exists("secret.key"):
@@ -132,22 +156,64 @@ def register():
 def login_with_credentials():
     username = request.form.get("username")
     password = request.form.get("password")
+    otp = request.form.get("otp")  # Codul OTP, dacă este trimis
 
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT password, role FROM users WHERE username = ?', (username,))
+
+    # Verifică dacă utilizatorul există
+    cursor.execute('SELECT password, otp, otp_timestamp, email FROM users WHERE username = ?', (username,))
     result = cursor.fetchone()
+    if not result:
+        conn.close()
+        return jsonify({"success": False, "message": "Invalid username or password."}), 401
+
+    stored_password, stored_otp, otp_timestamp, email = result
+
+    # Dacă OTP-ul este trimis, verifică-l
+    if otp:
+        if stored_otp != otp:
+            conn.close()
+            return jsonify({"success": False, "message": "Invalid OTP."}), 400
+
+        # Verifică dacă OTP-ul a expirat (5 minute)
+        try:
+            otp_time = datetime.strptime(otp_timestamp, "%Y-%m-%d %H:%M:%S.%f")
+        except (ValueError, TypeError):
+            try:
+                otp_time = datetime.strptime(otp_timestamp, "%Y-%m-%d %H:%M:%S")
+            except Exception:
+                conn.close()
+                return jsonify({"success": False, "message": "Invalid OTP timestamp format."}), 400
+
+        if datetime.now() > otp_time + timedelta(minutes=5):
+            conn.close()
+            return jsonify({"success": False, "message": "OTP expired."}), 400
+
+        # Șterge OTP-ul după utilizare
+        cursor.execute('UPDATE users SET otp = NULL, otp_timestamp = NULL WHERE username = ?', (username,))
+        conn.commit()
+        conn.close()
+
+        # Finalizează autentificarea
+        return jsonify({"success": True, "message": "Authentication successful."})
+
+    # Dacă OTP-ul nu este trimis, validează username-ul și parola
+    if not bcrypt.checkpw(password.encode(), stored_password):
+        conn.close()
+        return jsonify({"success": False, "message": "Invalid username or password."}), 401
+
+    # Generează și trimite OTP-ul
+    otp = generate_otp()
+    otp_timestamp = datetime.now()
+
+    cursor.execute('UPDATE users SET otp = ?, otp_timestamp = ? WHERE username = ?', (otp, otp_timestamp, username))
+    conn.commit()
     conn.close()
 
-    if result is None:
-        return jsonify({"success": False, "message": "Invalid username or password."})
+    send_otp_email(email, otp)
 
-    stored_password, role = result
-    if bcrypt.checkpw(password.encode(), stored_password):
-        return jsonify({"success": True, "message": "Login successful.", "role": role})
-    else:
-        return jsonify({"success": False, "message": "Invalid username or password."})
-
+    return jsonify({"success": True, "message": "OTP sent to your email. Please enter it to complete authentication."})
 
 @app.route("/login", methods=["POST"])
 def login():
