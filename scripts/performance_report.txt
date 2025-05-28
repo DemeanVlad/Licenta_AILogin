@@ -1,0 +1,46 @@
+--- Timing Metrics ---
+Image Load Time: 0.0006 seconds
+Encoding Time: 0.0001 seconds
+Comparison Time: 0.0400 seconds
+Total Time: 0.0406 seconds
+
+--- Performance Metrics ---
+Acuratețe generală: 94.92%
+Precision macro: 0.987
+Top-3 Accuracy: 100.00%
+False Acceptance Rate (FAR): 5.08%
+False Rejection Rate (FRR): 5.08%
+Genuine Acceptance Rate (GAR): 94.92%
+
+Raport clasificare per clasă:
+                           precision    recall  f1-score   support
+
+             Andre_Agassi       1.00      1.00      1.00         7
+             Ariel_Sharon       1.00      1.00      1.00        15
+             Colin_Powell       1.00      0.89      0.94        47
+          Donald_Rumsfeld       1.00      0.88      0.93        24
+            George_W_Bush       0.89      1.00      0.94       106
+  Gloria_Macapagal_Arroyo       1.00      1.00      1.00         8
+          Guillermo_Coria       1.00      1.00      1.00         6
+             Hamid_Karzai       1.00      1.00      1.00         4
+                Hans_Blix       1.00      0.86      0.92         7
+           Jacques_Chirac       1.00      1.00      1.00        10
+         Jennifer_Aniston       1.00      1.00      1.00         4
+      Juan_Carlos_Ferrero       1.00      0.80      0.89         5
+        Junichiro_Koizumi       1.00      1.00      1.00        12
+               Laura_Bush       1.00      0.75      0.86         8
+        Lindsay_Davenport       1.00      1.00      1.00         4
+           Lleyton_Hewitt       1.00      0.88      0.93         8
+Luiz_Inacio_Lula_da_Silva       1.00      1.00      1.00         9
+            Mahmoud_Abbas       1.00      0.80      0.89         5
+              Naomi_Watts       1.00      1.00      1.00         4
+             Roh_Moo-hyun       1.00      1.00      1.00         6
+          Serena_Williams       1.00      0.80      0.89        10
+              Tiger_Woods       1.00      1.00      1.00         4
+               Tony_Blair       0.88      1.00      0.93        28
+           Vladimir_Putin       0.90      1.00      0.95         9
+             Winona_Ryder       1.00      0.50      0.67         4
+
+                 accuracy                           0.95       354
+                macro avg       0.99      0.93      0.95       354
+             weighted avg       0.95      0.95      0.95       354

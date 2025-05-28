@@ -19,6 +19,8 @@ __pycache__/
 # Ignoră fișierele încărcate de utilizatori
 static/uploads/
 
+database
+
 secret.key
 # Ignore TensorFlow/Keras model files
 *.h5
