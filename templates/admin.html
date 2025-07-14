@@ -16,7 +16,7 @@
             <video id="video" autoplay></video>
             <canvas id="canvas" width="640" height="480" style="display:none;"></canvas>
             <br>
-            <button onclick="capture()">Capture Photo</button>
+            
         </div>
 
         <div class="section">
@@ -28,7 +28,6 @@
             <br>
             <button onclick="verifyAccess(document.getElementById('eventSelect').value)">Verify Access</button>
         </div>
-        <div id="verificationResult"></div>
     </div>
 
     <div class="bottom-container">
@@ -43,5 +42,14 @@
     document.addEventListener("DOMContentLoaded", function () {
         loadUserEvents(); // Încarcă evenimentele utilizatorului
     });
+
+    // Exemplu: actualizare status din JS după acces acordat
+    function setAccessGranted(username) {
+        document.getElementById('verificationResult').textContent = "Access granted for " + username + ".";
+        document.getElementById('verificationResult').style.color = "#00ff99";
+    }
+
+    // Exemplu: folosire la validare
+    // setAccessGranted("Test");
 </script>
 </html>
