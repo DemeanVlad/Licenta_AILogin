@@ -3,13 +3,13 @@ import shutil
 
 # === CONFIG ===
 ACCURACY_THRESHOLD = 0.7  # Modifică în funcție de ce consideri "face recogn mare"
-EVAL_REPORT_PATH = "../eval_report.txt"  # Raportul de evaluare salvat ca text (output-ul tău)
+EVAL_REPORT_PATH = "../performance_report.txt"  # Raportul de evaluare salvat ca text (output-ul tău)
 TESTSET_PATH = "../database/dataset_test_min20"  # Folderul SETULUI DE TEST
 TRAINSET_PATH = "../database/dataset_train_min20"  # Folderul SETULUI DE TRAIN
 DEST_TEST = "../database/dataset_test_filtered"
 DEST_TRAIN = "../database/dataset_train_filtered"
 
-# === CITIRE RAPORT ===
+
 def parse_eval_report(report_path, acc_threshold=ACCURACY_THRESHOLD):
     persons = []
     with open(report_path, "r") as f:

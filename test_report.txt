@@ -1,0 +1,15 @@
+Rezultate testare automata API:
+test_get_events: PASSED (status 200)
+Raspuns: {'events': ['Festival de Film', 'Hackathon Tech Future']}
+
+test_login_face: PASSED (status 200)
+Raspuns: {'message': 'No matching face found.', 'success': False}
+
+test_my_events: PASSED (status 200)
+Raspuns: {'events': [], 'success': True}
+
+test_verify_access: PASSED (status 200)
+Raspuns: {'message': 'Access denied. No matching face found for this event.', 'success': False}
+
+
+TOATE TESTELE AU TRECUT!

@@ -9,7 +9,7 @@
 body {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center;al
     min-height: 100vh;
     background: #111;
     width: 100%;
@@ -202,17 +202,17 @@ button.primary-button:hover {
 
 button.secondary-button {
     background: linear-gradient(45deg, #ff357a, #fff172);
-    border: none;
+    border: none ;
     padding: 15px 20px;
     border-radius: 40px;
     color: white;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 15px;
-    width: 48%; /* Fiecare buton ocupă jumătate din spațiu */
-    max-width: 140px; /* Dimensiune maximă */
+    width: 48%; /* Fiecare buton ocupa jumatate din spațiu */
+    max-width: 140px; /* dim max */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     text-align: center;
 }

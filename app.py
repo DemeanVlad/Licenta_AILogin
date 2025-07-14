@@ -47,14 +47,14 @@ with open("secret.key", "rb") as f:
 
 app = Flask(__name__, static_folder='static')
 
-# Încarcă modelul antrenat (dacă este necesar)
+# Încarcă modelul antrenat (
 MODEL_PATH = "face_recognition_model.h5"
 if os.path.exists(MODEL_PATH):
     model = load_model(MODEL_PATH)
 else:
     model = None
 
-# Încarcă class indices (dacă este necesar)
+# Încarcă class indices 
 if os.path.exists("class_indices.json"):
     with open("class_indices.json", "r") as f:
         class_indices = json.load(f)
@@ -102,14 +102,14 @@ def check_password(password, hashed):
     return bcrypt.checkpw(password.encode(), hashed)
 
 def encrypt_face_vector(face_vector):
-    face_bytes = json.dumps(face_vector).encode()
+    face_bytes = json.dumps(face_vector.tolist()).encode()
     encrypted = fernet.encrypt(face_bytes)
     return base64.b64encode(encrypted).decode()
 
 def decrypt_face_vector(encrypted_str):
     encrypted = base64.b64decode(encrypted_str.encode())
     decrypted_bytes = fernet.decrypt(encrypted)
-    return json.loads(decrypted_bytes.decode())
+    return np.array(json.loads(decrypted_bytes.decode()))
 
 # Rute
 @app.route("/")
@@ -137,7 +137,7 @@ def register():
 
     face_encoding = face_encodings[0]
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-    encrypted_face_encoding = fernet.encrypt(str(face_encoding.tolist()).encode())
+    encrypted_face_encoding = encrypt_face_vector(face_encoding)
 
     try:
         conn = sqlite3.connect('database.db')
